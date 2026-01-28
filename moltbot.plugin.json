@@ -2,7 +2,7 @@
     "id": "feishu",
     "name": "Feishu",
     "description": "Feishu/Lark channel plugin for Clawdbot",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "channels": [
         "feishu"
     ],
