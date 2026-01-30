@@ -1,4 +1,4 @@
-# clawdbot-plugin-feishu
+# moltbot-channel-feishu
 
 **Turn Feishu into your AI super-gateway.** A production-grade Feishu/Lark channel plugin for [Moltbot](https://molt.bot) — the brilliant AI agent framework.
 
@@ -6,10 +6,10 @@
 
 ```bash
 # npm
-moltbot plugin install @samzong/feishu
+moltbot plugin install moltbot-channel-feishu
 
 # GitHub (for testing)
-moltbot plugin install github:samzong/clawdbot-plugin-feishu
+moltbot plugin install github:samzong/moltbot-channel-feishu
 ```
 
 ## Configure
