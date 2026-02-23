@@ -11,7 +11,7 @@ import { initializeRuntime } from "../core/runtime.js";
 export { initializeRuntime, getRuntime } from "../core/runtime.js";
 
 const plugin = {
-  id: "feishu",
+  id: "moltbot-channel-feishu",
   name: "Feishu",
   description: "Feishu/Lark channel plugin for Clawdbot",
   configSchema: emptyPluginConfigSchema(),
