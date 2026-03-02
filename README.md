@@ -1,14 +1,24 @@
 # moltbot-channel-feishu
 
-**Turn Feishu into your AI super-gateway.** A production-grade Feishu/Lark channel plugin for [OpenClaw](https://openclaw.ai) / [Moltbot](https://molt.bot) — the brilliant AI agent framework.
+A Feishu/Lark channel plugin for [OpenClaw](https://openclaw.ai) / [Moltbot](https://molt.bot) / Clawdbot.
 
-## Install
+## Project Status (March 2026)
+
+This plugin was created when [OpenClaw](https://openclaw.ai) (ex. Clawbot/Moltbot) did not yet provide a built-in Feishu/Lark channel.
+
+OpenClaw now has an official Feishu channel. For new deployments, use the official solution instead of this plugin:
+
+- https://docs.openclaw.ai/channels/feishu
+
+This repository stays available for legacy setups and migration reference.
+
+## Install (Legacy only)
 
 ```bash
-# OpenClaw (recommended)
+# OpenClaw (legacy/testing only)
 openclaw plugins install moltbot-channel-feishu
 
-# Moltbot
+# Moltbot (legacy)
 moltbot plugins install moltbot-channel-feishu
 
 # Clawdbot (legacy)
@@ -71,4 +81,3 @@ export FEISHU_APP_SECRET="xxx"
 ## License
 
 [MIT](LICENSE)
-
