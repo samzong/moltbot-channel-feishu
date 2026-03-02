@@ -103,32 +103,101 @@ export async function probeConnection(config: Config | undefined): Promise<Probe
   }
 
   try {
-    const client = getApiClient(config);
+    const baseUrl = credentials.domain === "lark"
+      ? "https://open.larksuite.com"
+      : "https://open.feishu.cn";
 
-    // Use bot info endpoint to verify credentials
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response = (await (client as any).bot.botInfo()) as {
-      code?: number;
-      msg?: string;
-      bot?: {
-        app_name?: string;
-        open_id?: string;
-      };
-    };
+    // Probe using direct HTTP for compatibility across SDK versions.
+    // Newer @larksuiteoapi/node-sdk builds do not expose `client.bot.*`.
+    const tokenResp = await fetch(`${baseUrl}/open-apis/auth/v3/tenant_access_token/internal`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        app_id: credentials.appId,
+        app_secret: credentials.appSecret,
+      }),
+    });
 
-    if (response.code !== 0) {
+    if (!tokenResp.ok) {
       return {
         ok: false,
-        error: response.msg ?? `API error code ${response.code}`,
+        error: `Tenant access token request failed (HTTP ${tokenResp.status})`,
         appId: credentials.appId,
       };
     }
 
+    const tokenJson = (await tokenResp.json()) as {
+      code?: number;
+      msg?: string;
+      tenant_access_token?: string;
+      expire?: number;
+      data?: {
+        tenant_access_token?: string;
+        expire?: number;
+      };
+    };
+
+    if (tokenJson.code !== 0) {
+      return {
+        ok: false,
+        error: tokenJson.msg ?? `Failed to obtain tenant access token (code ${tokenJson.code})`,
+        appId: credentials.appId,
+      };
+    }
+
+    const tenantAccessToken =
+      tokenJson.tenant_access_token ?? tokenJson.data?.tenant_access_token;
+
+    if (!tenantAccessToken) {
+      return {
+        ok: false,
+        error: "Tenant access token missing in response",
+        appId: credentials.appId,
+      };
+    }
+
+    const infoResp = await fetch(`${baseUrl}/open-apis/bot/v3/info`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${tenantAccessToken}`,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+    });
+
+    if (!infoResp.ok) {
+      return {
+        ok: false,
+        error: `Bot info request failed (HTTP ${infoResp.status})`,
+        appId: credentials.appId,
+      };
+    }
+
+    const infoJson = (await infoResp.json()) as {
+      code?: number;
+      msg?: string;
+      data?: Record<string, unknown>;
+    };
+
+    if (infoJson.code !== 0) {
+      return {
+        ok: false,
+        error: infoJson.msg ?? `Bot info API error (code ${infoJson.code})`,
+        appId: credentials.appId,
+      };
+    }
+
+    const data = infoJson.data ?? {};
+    const botName = (data["name"] ?? data["app_name"]) as string | undefined;
+    const botOpenId =
+      (data["open_id"] ?? data["bot_open_id"] ?? data["bot_openId"]) as string | undefined;
+
     return {
       ok: true,
       appId: credentials.appId,
-      botName: response.bot?.app_name,
-      botOpenId: response.bot?.open_id,
+      botName,
+      botOpenId,
     };
   } catch (err) {
     return {
