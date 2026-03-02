@@ -1,8 +1,8 @@
 {
     "id": "moltbot-channel-feishu",
     "name": "Feishu",
-    "description": "Feishu/Lark channel plugin for Moltbot",
-    "version": "0.0.12",
+    "description": "Legacy Feishu/Lark channel plugin. Prefer OpenClaw official Feishu channel.",
+    "version": "0.0.13",
     "channels": [
         "feishu"
     ],
